@@ -1,0 +1,13 @@
+{
+  "parser": "babel-eslint",
+  "extends": [
+    "plugin:jest/recommended",
+    "standard"
+  ],
+  "env": {
+    "jest": true
+  },
+  "plugins": [
+    "jest"
+  ]
+}
