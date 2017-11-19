@@ -16,6 +16,21 @@
     "test": "eslint . && jest",
     "release": "np"
   },
+  "cli-engine": {
+    "topics": {
+      "charge": {
+        "description": "Charge Framework for SFDX development",
+        "subtopics": {
+          "hello": {
+            "description": "Hello world"
+          },
+          "nested": {
+            "description": "Nested hello world"
+          }
+        }
+      }
+    }
+  },
   "dependencies": {
     "cli-engine-command": "^5.1.7",
     "cli-engine-config": "^1.3.7",

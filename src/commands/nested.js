@@ -1,9 +1,8 @@
 import {Command, flags} from 'cli-engine-heroku'
 
 export default class HelloWorld extends Command {
-  static topic = 'charge:hello'
+  static topic = 'charge:nested'
   static command = 'world'
-  static description = 'say hi'
   static flags = {
     name: flags.string({description: 'name to say hello to'})
   }
