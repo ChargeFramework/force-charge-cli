@@ -1,15 +1,14 @@
 import childProcess from 'child_process'
 import path from 'path'
 import util from 'util'
-import fs from 'fs'
 
+import {Command, flags} from 'cli-engine-heroku'
 import Rx from 'rxjs/Rx'
 import watch from 'node-watch'
 
-import {Command, flags} from 'cli-engine-heroku'
+import {getPackageDirectories} from '../utils'
 
 const execFile = util.promisify(childProcess.execFile)
-const readFileAsync = util.promisify(fs.readFile)
 
 export default class SyncCommand extends Command {
   static topic = 'charge:source'
@@ -28,22 +27,16 @@ export default class SyncCommand extends Command {
   async run () {
     const debounce = (this.flags.debounce === undefined ? 1000 : this.flags.debounce)
     const currentDir = process.cwd()
-    const projectConfigPath = path.join(currentDir, 'sfdx-project.json')
 
     try {
-      const configContent = await readFileAsync(projectConfigPath, 'utf8')
-      const config = JSON.parse(configContent)
-
-      if (!config.packageDirectories || config.packageDirectories.length === 0) {
-        throw new Error('No package directory found')
-      }
+      const packageDirectories = await getPackageDirectories()
 
       const events$ = Rx.Observable.create((observer) => {
         // Push immediately when the command is first run
         observer.next({})
 
         watch(
-          config.packageDirectories.map(dir => path.join(currentDir, dir.path)),
+          packageDirectories.map(dir => path.join(currentDir, dir.path)),
           { recursive: true },
           (...args) => {
             observer.next(args)
@@ -90,8 +83,7 @@ export default class SyncCommand extends Command {
       const {stdout} = await execFile('sfdx', args)
       this.out.log(stdout)
     } catch (e) {
-      this.out.error(e.stdout)
-      this.out.error(e.stderr)
+      this.out.error(e)
     }
   }
 }

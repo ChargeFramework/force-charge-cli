@@ -24,6 +24,9 @@
           "hello": {
             "description": "Hello world"
           },
+          "project": {
+            "description": "project-wide tools"
+          },
           "source": {
             "description": "tools for handling source code"
           }
