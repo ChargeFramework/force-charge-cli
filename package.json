@@ -24,9 +24,6 @@
           "hello": {
             "description": "Hello world"
           },
-          "nested": {
-            "description": "Nested hello world"
-          },
           "source": {
             "description": "tools for handling source code"
           }
