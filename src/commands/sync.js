@@ -33,20 +33,26 @@ export default class SyncCommand extends Command {
 
       const events$ = Rx.Observable.create((observer) => {
         // Push immediately when the command is first run
-        observer.next({})
+        observer.next({initial: true})
 
         watch(
           packageDirectories.map(dir => path.join(currentDir, dir.path)),
           { recursive: true },
           (...args) => {
-            observer.next(args)
+            observer.next({initial: false, change: args})
           }
         )
       })
       this.out.log('Watching for file changes')
       events$
         .debounceTime(debounce)
-        .do(() => this.out.log('File structure updated. Pushing to scratch org...'))
+        .do((evt) => {
+          if (evt.initial) {
+            this.out.log('Initial push to scratch org...')
+          } else {
+            this.out.log('File structure updated. Pushing to scratch org...')
+          }
+        })
         .do(() => this.spawnPushCommand(this.flags.targetusername, this.flags.forceoverwrite, this.flags.ignorewarnings, this.flags.wait, this.flags.json, this.flags.loglevel))
         .subscribe()
       return events$.toPromise()
