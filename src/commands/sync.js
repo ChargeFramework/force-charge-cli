@@ -53,7 +53,7 @@ export default class SyncCommand extends Command {
             this.out.log('File structure updated. Pushing to scratch org...')
           }
         })
-        .do(() => this.spawnPushCommand(this.flags.targetusername, this.flags.forceoverwrite, this.flags.ignorewarnings, this.flags.wait, this.flags.json, this.flags.loglevel))
+        .switchMap(val => this.spawnPushCommand(this.flags.targetusername, this.flags.forceoverwrite, this.flags.ignorewarnings, this.flags.wait, this.flags.json, this.flags.loglevel))
         .subscribe()
       return events$.toPromise()
     } catch (e) {
