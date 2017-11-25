@@ -14,6 +14,7 @@
     "clean": "rimraf lib",
     "prepare": "npm run clean && npm run build",
     "test": "eslint . && jest",
+    "prettify": "prettier --write src/**/*.js",
     "release": "np"
   },
   "cli-engine": {
@@ -43,17 +44,21 @@
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
-    "babel-eslint": "^7.2.3",
+    "babel-eslint": "^8.0.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
     "eslint": "^4.0.0",
-    "eslint-config-standard": "^10.2.1",
+    "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-import": "^2.5.0",
     "eslint-plugin-jest": "^20.0.3",
     "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-prettier": "^2.3.1",
     "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1",
     "jest": "^20.0.4",
+    "prettier": "^1.8.2",
     "rimraf": "^2.6.1"
+  },
+  "prettier": {
+    "trailingComma": "all"
   }
 }

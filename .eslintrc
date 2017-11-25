@@ -1,13 +1,19 @@
 {
   "parser": "babel-eslint",
   "extends": [
+    "plugin:promise/recommended",
     "plugin:jest/recommended",
-    "standard"
+    "prettier"
   ],
   "env": {
     "jest": true
   },
   "plugins": [
-    "jest"
-  ]
+    "promise",
+    "jest",
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": "error"
+  }
 }
