@@ -1,14 +1,11 @@
 import childProcess from 'child_process'
 import path from 'path'
-import util from 'util'
 
 import {Command, flags} from 'cli-engine-heroku'
 import Rx from 'rxjs/Rx'
 import watch from 'node-watch'
 
 import {getPackageDirectories} from '../utils'
-
-const execFile = util.promisify(childProcess.execFile)
 
 export default class SyncCommand extends Command {
   static topic = 'charge:source'
@@ -53,8 +50,13 @@ export default class SyncCommand extends Command {
             this.out.log('File structure updated. Pushing to scratch org...')
           }
         })
-        .switchMap(val => this.spawnPushCommand(this.flags.targetusername, this.flags.forceoverwrite, this.flags.ignorewarnings, this.flags.wait, this.flags.json, this.flags.loglevel))
-        .subscribe()
+        .switchMap(val => this.getPushObservable$(this.flags.targetusername, this.flags.forceoverwrite, this.flags.ignorewarnings, this.flags.wait, this.flags.json, this.flags.loglevel))
+        .subscribe(outputs => {
+          this.out.log(outputs.stdout)
+          if (outputs.stderr) {
+            this.out.log(outputs.stderr)
+          }
+        })
       return events$.toPromise()
     } catch (e) {
       if (e.code === 'ENOENT') {
@@ -65,7 +67,7 @@ export default class SyncCommand extends Command {
     }
   }
 
-  async spawnPushCommand (username, forceOverwrite, ignoreWarnings, wait, json, logLevel) {
+  getPushObservable$ (username, forceOverwrite, ignoreWarnings, wait, json, logLevel) {
     const args = ['force:source:push']
     if (username) {
       args.push('--targetusername', username)
@@ -85,11 +87,17 @@ export default class SyncCommand extends Command {
     if (logLevel) {
       args.push('--loglevel', logLevel)
     }
-    try {
-      const {stdout} = await execFile('sfdx', args)
-      this.out.log(stdout)
-    } catch (e) {
-      this.out.error(e)
-    }
+    return Rx.Observable.create((observer) => {
+      const sfdxProcess = childProcess.execFile('sfdx', args, (error, stdout, stderr) => {
+        if (error) {
+          this.out.log(error)
+        }
+        observer.next({stdout, stderr})
+      })
+      return () => {
+        this.out.log('Cancelling previous push command')
+        sfdxProcess.kill()
+      }
+    })
   }
 }
