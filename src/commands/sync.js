@@ -73,7 +73,7 @@ export default class SyncCommand extends Command {
             this.out.log("File structure updated. Pushing to scratch org...");
           }
         })
-        .switchMap(val =>
+        .switchMap(_ =>
           this.getPushObservable$(
             this.flags.targetusername,
             this.flags.forceoverwrite,

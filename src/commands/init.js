@@ -9,7 +9,7 @@ export default class ProjectInitCommand extends Command {
 
   async run() {
     try {
-      const packageDirectories = await getPackageDirectories();
+      await getPackageDirectories();
     } catch (e) {
       if (e.code === "ENOENT") {
         throw new Error(
