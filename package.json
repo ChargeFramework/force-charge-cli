@@ -15,7 +15,8 @@
     "prepare": "npm run clean && npm run build",
     "test": "eslint . && jest",
     "prettify": "prettier --write src/**/*.js",
-    "release": "np"
+    "release": "np",
+    "precommit": "lint-staged"
   },
   "cli-engine": {
     "topics": {
@@ -54,11 +55,16 @@
     "eslint-plugin-node": "^5.0.0",
     "eslint-plugin-prettier": "^2.3.1",
     "eslint-plugin-promise": "^3.5.0",
+    "husky": "^0.14.3",
     "jest": "^20.0.4",
+    "lint-staged": "^6.0.0",
     "prettier": "^1.8.2",
     "rimraf": "^2.6.1"
   },
   "prettier": {
     "trailingComma": "all"
+  },
+  "lint-staged": {
+    "src/**/*/js": ["npm run prettify", "git add"]
   }
 }
