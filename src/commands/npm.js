@@ -8,8 +8,8 @@ const execFile = util.promisify(childProcess.execFile);
 
 export default class NpmCommand extends Command {
   static topic = "charge:tools";
-  static command = "yarn";
-  static description = "run command using embedded yarn";
+  static command = "npm";
+  static description = "run command using embedded npm";
   static variableArgs = true;
 
   async run() {
@@ -18,9 +18,9 @@ export default class NpmCommand extends Command {
       "..",
       "..",
       "node_modules",
-      "yarn",
+      "npm",
       "bin",
-      "yarn.js",
+      "npm-cli.js",
     );
     await this.spawnCommand("node", [yarnPath, ...this.argv]);
   }
