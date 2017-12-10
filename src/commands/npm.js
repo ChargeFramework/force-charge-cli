@@ -13,6 +13,10 @@ export default class NpmCommand extends Command {
   static variableArgs = true;
 
   async run() {
+    await this.invokeNpmCommand(this.argv);
+  }
+
+  async invokeNpmCommand(args, { silent = false } = {}) {
     const yarnPath = path.resolve(
       __dirname,
       "..",
@@ -22,13 +26,16 @@ export default class NpmCommand extends Command {
       "bin",
       "npm-cli.js",
     );
-    await this.spawnCommand("node", [yarnPath, ...this.argv]);
+    return await this.spawnCommand("node", [yarnPath, ...args], { silent });
   }
 
-  async spawnCommand(path, args) {
+  async spawnCommand(path, args, { silent = false } = {}) {
     try {
       const { stdout } = await execFile(path, args);
-      this.out.log(stdout);
+      if (!silent) {
+        this.out.log(stdout);
+      }
+      return stdout;
     } catch (e) {
       this.out.log(e);
     }
