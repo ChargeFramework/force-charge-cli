@@ -14,7 +14,7 @@
     "clean": "rimraf lib",
     "prepare": "npm run clean && npm run build",
     "test": "eslint . && jest",
-    "prettify": "prettier --write src/**/*.js",
+    "prettify": "prettier --write \"src/**/*.js\"",
     "release": "np",
     "precommit": "lint-staged"
   },
