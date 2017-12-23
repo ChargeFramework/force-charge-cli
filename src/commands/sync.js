@@ -1,11 +1,10 @@
-import childProcess from "child_process";
 import path from "path";
 
 import { Command, flags } from "cli-engine-heroku";
 import Rx from "rxjs/Rx";
 import watch from "node-watch";
 
-import { getPackageDirectories } from "../utils";
+import { execFile$, getPackageDirectories } from "../utils";
 
 export default class SyncCommand extends Command {
   static topic = "charge:source";
@@ -88,6 +87,9 @@ export default class SyncCommand extends Command {
           if (outputs.stderr) {
             this.out.log(outputs.stderr);
           }
+          if (outputs.error) {
+            this.out.log(outputs.error);
+          }
         });
       return events$.toPromise();
     } catch (e) {
@@ -128,21 +130,6 @@ export default class SyncCommand extends Command {
     if (logLevel) {
       args.push("--loglevel", logLevel);
     }
-    return Rx.Observable.create(observer => {
-      const sfdxProcess = childProcess.execFile(
-        "sfdx",
-        args,
-        (error, stdout, stderr) => {
-          if (error) {
-            this.out.log(error);
-          }
-          observer.next({ stdout, stderr });
-        },
-      );
-      return () => {
-        this.out.log("Cancelling previous push command");
-        sfdxProcess.kill();
-      };
-    });
+    return execFile$("sfdx", args, { silent: true });
   }
 }

@@ -1,10 +1,8 @@
-import childProcess from "child_process";
 import path from "path";
-import util from "util";
 
 import { Command } from "cli-engine-heroku";
 
-const execFile = util.promisify(childProcess.execFile);
+import { execFile } from "../utils";
 
 export default class NpmCommand extends Command {
   static topic = "charge:tools";
@@ -26,16 +24,11 @@ export default class NpmCommand extends Command {
       "bin",
       "npm-cli.js",
     );
-    return await this.spawnCommand("node", [yarnPath, ...args], { silent });
-  }
-
-  async spawnCommand(path, args, { silent = false } = {}) {
     try {
-      const { stdout } = await execFile(path, args);
-      if (!silent) {
-        this.out.log(stdout);
-      }
-      return stdout;
+      const stdout = await execFile("node", [yarnPath, ...args], {
+        silent,
+      });
+      this.out.log(stdout);
     } catch (e) {
       this.out.log(e);
     }
