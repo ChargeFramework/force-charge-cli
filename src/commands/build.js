@@ -7,8 +7,15 @@ import { Command } from "cli-engine-heroku";
 import Rx from "rxjs/Rx";
 
 import NpmCommand from "./npm";
+import { execFile$ } from "../utils";
 
 const writeFileAsync = promisify(fs.writeFile);
+
+const ContainerOption = {
+  LOCKED: "Locked",
+  UNLOCKED: "Unlocked",
+  MANAGED: "Managed",
+};
 
 export default class BuildCommand extends Command {
   static topic = "charge:project";
@@ -130,5 +137,66 @@ export default class BuildCommand extends Command {
 
   async writeJsonFile(filePath, jsonContent) {
     await writeFileAsync(filePath, JSON.stringify(jsonContent, null, 2));
+  }
+
+  createPackage$(
+    packageName,
+    {
+      description = "",
+      noNameSpace = false,
+      containerOption = ContainerOption.LOCKED,
+      targetDevHubUserName = null,
+    } = {},
+  ) {
+    const args = [
+      "force:package2:create",
+      "--json",
+      "--name",
+      packageName,
+      "--containeroptions",
+      containerOption,
+    ];
+    if (description) {
+      args.push("--description", description);
+    }
+    if (targetDevHubUserName) {
+      args.push("--targetdevhubusername", targetDevHubUserName);
+    }
+    if (noNameSpace) {
+      args.push("--nonamespace");
+    }
+    return execFile$("sfdx", args);
+  }
+
+  createPackageVersion$(directory, { targetDevHubUserName = null }) {
+    const args = [
+      "force:package2:version:create",
+      "--json",
+      "--directory",
+      directory,
+    ];
+    if (targetDevHubUserName) {
+      args.push("--targetdevhubusername", targetDevHubUserName);
+    }
+    return execFile$("sfdx", args);
+  }
+
+  getPackageVersionCreateStatus$(
+    createRequestId,
+    { targetDevHubUserName = null },
+  ) {
+    const args = [
+      "force:package2:version:create:get",
+      "--package2createrequestid",
+      createRequestId,
+    ];
+    if (targetDevHubUserName) {
+      args.push("--targetdevhubusername", targetDevHubUserName);
+    }
+    return execFile$("sfdx", args);
+  }
+
+  installPackageVersion$(packageId) {
+    return execFile$("sfdx", ["force:package:install", "--id", packageId]);
   }
 }
